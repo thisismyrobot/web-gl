@@ -13,10 +13,10 @@ class Page:
     def __init__(self):
         self.page = pyglet.text.Label('',
                                       font_size=8,
-                                      width=200, 
+                                      width=400, 
                                       height=300,
                                       multiline=True, 
-                                      color=(255, 255, 255, 255),
+                                      color=(0, 255, 0, 255),
                                       anchor_x='center', 
                                       anchor_y='center')
 
@@ -34,12 +34,12 @@ class Page:
         #draw text background
         pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(0.0, 0.0, -500)
-        pyglet.gl.glColor4f(1.0, 1.0, 1.0, 0.5)
-        pyglet.gl.glBegin(pyglet.gl.GL_QUADS)
-        pyglet.gl.glVertex3f(-120.0, 170.0, 0.0)
-        pyglet.gl.glVertex3f(120.0, 170.0, 0.0)
-        pyglet.gl.glVertex3f(120.0, -150.0, 0.0)
-        pyglet.gl.glVertex3f(-120.0, -150.0, 0.0)
+        pyglet.gl.glColor4f(0, 1.0, 0, 1)
+        pyglet.gl.glBegin(pyglet.gl.GL_LINE_STRIP)
+        pyglet.gl.glVertex3f(-220.0, -170.0, 0.0)
+        pyglet.gl.glVertex3f(-220.0, 170.0, 0.0)
+        pyglet.gl.glVertex3f(220.0, 170.0, 0.0)
+        pyglet.gl.glVertex3f(220.0, -170.0, 0.0)
         pyglet.gl.glEnd()
         
         #draw text
@@ -55,18 +55,17 @@ class Environment:
 
     def draw_base(self):
         pyglet.gl.glPushMatrix()
-        pyglet.gl.glColor4f(0.0, 0.0, 1.0, 0.75)
+        pyglet.gl.glColor4f(0.0, 0.0, 1.0, 0.1)
         pyglet.gl.glBegin(pyglet.gl.GL_QUADS)
-        pyglet.gl.glVertex3f(-550.0, -150.0, 550.0)
-        pyglet.gl.glVertex3f(550.0, -150.0, 550.0)
-        pyglet.gl.glVertex3f(550.0, -150.0, -550.0)
-        pyglet.gl.glVertex3f(-550.0, -150.0, -550.0)
+        pyglet.gl.glVertex3f(-550.0, -170.0, 550.0)
+        pyglet.gl.glVertex3f(550.0, -170.0, 550.0)
+        pyglet.gl.glVertex3f(550.0, -170.0, -550.0)
+        pyglet.gl.glVertex3f(-550.0, -170.0, -550.0)
         pyglet.gl.glEnd()
         pyglet.gl.glPopMatrix()
 
 
 class Camera():
-    x,y,z=0,0,0
     rx,ry,rz=30,-45,0
     w,h=640,480
     far=8192
@@ -90,7 +89,6 @@ class Camera():
         glRotatef(self.rx,1,0,0)
         glRotatef(self.ry,0,1,0)
         glRotatef(self.rz,0,0,1)
-        glTranslatef(-self.x,-self.y,-self.z)
 
 
 class Browser:
