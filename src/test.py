@@ -5,8 +5,9 @@ from pyglet.gl import *
 import urllib2
 import pyglet.text
 
+
 class Page:
-    """Represents a page loaded remotely.
+    """ Represents a remotely loaded page
     """
 
     def __init__(self):
@@ -44,32 +45,27 @@ class Page:
         #draw text
         pyglet.gl.glTranslatef(0.0, 0.0, 1)
         self.page.draw()
-
         pyglet.gl.glPopMatrix()
 
-def pages_init():
-    page1.load_url("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
 
-def opengl_init():
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    glDepthFunc(GL_LEQUAL)
+class Environment:
 
-def draw_pages():
-    page1.draw()
+    def draw(self):
+        self.draw_base()
 
-def draw_base():
-    pyglet.gl.glPushMatrix()
-    pyglet.gl.glColor4f(0.0, 0.0, 1.0, 0.5)
-    pyglet.gl.glBegin(pyglet.gl.GL_QUADS)
-    pyglet.gl.glVertex3f(-550.0, -150.0, 550.0)
-    pyglet.gl.glVertex3f(550.0, -150.0, 550.0)
-    pyglet.gl.glVertex3f(550.0, -150.0, -550.0)
-    pyglet.gl.glVertex3f(-550.0, -150.0, -550.0)
-    pyglet.gl.glEnd()
-    pyglet.gl.glPopMatrix()
+    def draw_base(self):
+        pyglet.gl.glPushMatrix()
+        pyglet.gl.glColor4f(0.0, 0.0, 1.0, 0.75)
+        pyglet.gl.glBegin(pyglet.gl.GL_QUADS)
+        pyglet.gl.glVertex3f(-550.0, -150.0, 550.0)
+        pyglet.gl.glVertex3f(550.0, -150.0, 550.0)
+        pyglet.gl.glVertex3f(550.0, -150.0, -550.0)
+        pyglet.gl.glVertex3f(-550.0, -150.0, -550.0)
+        pyglet.gl.glEnd()
+        pyglet.gl.glPopMatrix()
 
-class camera():
+
+class Camera():
     x,y,z=0,0,0
     rx,ry,rz=30,-45,0
     w,h=640,480
@@ -96,18 +92,51 @@ class camera():
         glRotatef(self.rz,0,0,1)
         glTranslatef(-self.x,-self.y,-self.z)
 
-page1 = Page()
-cam=camera()
-win = window.Window(resizable=True)
-win.on_resize=cam.view
-win.on_mouse_drag=cam.drag
-opengl_init()
-pages_init()
 
-while not win.has_exit:
-    win.dispatch_events()
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    cam.apply()
-    draw_pages()
-    draw_base()
-    win.flip() 
+class Browser:
+    """ Represents the application's main window - the browser.
+    """
+    
+    def __init__(self):
+        """ sets up the the window, starts rendering the browser
+        """
+        
+        self.camera = Camera()
+        self.set_up_window()
+        self.environment = Environment()
+        self.page = Page()
+        self.page.load_url("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
+        
+        self.opengl_init()
+        self.render()
+
+    def set_up_window(self):
+        self.window = window.Window(resizable=True, fullscreen=True)
+        self.window.on_resize=self.camera.view
+        self.window.on_mouse_drag=self.camera.drag
+        
+    def opengl_init(self):
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glDepthFunc(GL_LEQUAL)
+
+    def render(self):
+        while not self.window.has_exit:
+            self.window.dispatch_events()
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            self.camera.apply()
+            self.environment.draw()
+            self.page.draw()
+            self.window.flip()
+
+    def add_page(self, url):
+        self.page = Page()
+        self.page.load_url(url)
+
+    def draw_pages(self):
+        self.page.draw()
+
+        
+Browser()
+
+
