@@ -8,9 +8,10 @@ class Page:
     """
 
     def __init__(self):
+        style = {'font-size':14, 'color':(0, 255, 0, 255)}
         self.document = pyglet.text.decode_text('No Page Loaded')
-        self.document.set_style(0, 50, {'font-size':14, 'color':(0, 255, 0, 255)})
-        self.layout = pyglet.text.layout.ScrollableTextLayout(
+        self.document.set_style(0, 50, style)
+        self.layout = pyglet.text.layout.IncrementalTextLayout(
             self.document,
             2000, 
             1400,
@@ -41,7 +42,7 @@ class Page:
         pyglet.gl.glVertex3f(1100.0, 1000.0, 0.0)
         pyglet.gl.glVertex3f(1100.0, -500.0, 0.0)
         pyglet.gl.glEnd()
-        
+
         #draw text
         pyglet.gl.glTranslatef(0.0, 250, 1)
         self.layout.draw()
@@ -49,7 +50,6 @@ class Page:
 
     def scroll(self, s):
         self.layout.view_y += s
-
 
 
 class Environment:
@@ -71,7 +71,7 @@ class Environment:
 
 
 class Camera():
-    rx,ry,rz=30,-45,0
+    rx,ry,rz=0,0,0
     w,h=640,480
     far=8192
     fov=60
@@ -85,10 +85,22 @@ class Camera():
         pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
 
     def drag(self, x, y, dx, dy, button, modifiers):
-        if button==1:
-            self.ry+=dx/4.
-            self.rx-=dy/4.
+        if button==4:
+            self.update_r(dx, dy)
+            
+    def update_r(self, dx, dy):
+        new_rx = self.rx-(dy/4.0)
+        new_ry = self.ry+(dx/4.0)
+        
+        if new_rx < -30:
+            new_rx = -30
 
+        if new_rx > 30:
+            new_rx = 30
+
+        self.rx=new_rx
+        self.ry=new_ry
+            
     def apply(self):
         pyglet.gl.glLoadIdentity()
         pyglet.gl.glRotatef(self.rx,1,0,0)
@@ -144,7 +156,7 @@ class Browser:
 
     def draw_pages(self):
         self.page.draw()
-        
+
     def scroll_page(self, x, y, dx, dy):
         k = 100
         self.page.scroll(dy*k)
