@@ -1,7 +1,5 @@
-from pyglet.window import key
-from pyglet.gl import *
-
 import urllib2
+import pyglet.gl
 import pyglet.text
 import pyglet.window
 
@@ -74,11 +72,11 @@ class Camera():
 
     def view(self,width,height):
         self.w,self.h=width,height
-        glViewport(0, 0, width, height)
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(self.fov, float(self.w)/self.h, 0.1, self.far)
-        glMatrixMode(GL_MODELVIEW)
+        pyglet.gl.glViewport(0, 0, width, height)
+        pyglet.gl.glMatrixMode(pyglet.gl.GL_PROJECTION)
+        pyglet.gl.glLoadIdentity()
+        pyglet.gl.gluPerspective(self.fov, float(self.w)/self.h, 0.1, self.far)
+        pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
 
     def drag(self, x, y, dx, dy, button, modifiers):
         if button==4:
@@ -86,10 +84,10 @@ class Camera():
             self.rx-=dy/4.
 
     def apply(self):
-        glLoadIdentity()
-        glRotatef(self.rx,1,0,0)
-        glRotatef(self.ry,0,1,0)
-        glRotatef(self.rz,0,0,1)
+        pyglet.gl.glLoadIdentity()
+        pyglet.gl.glRotatef(self.rx,1,0,0)
+        pyglet.gl.glRotatef(self.ry,0,1,0)
+        pyglet.gl.glRotatef(self.rz,0,0,1)
 
 
 class Browser:
@@ -115,16 +113,16 @@ class Browser:
         self.window.on_mouse_drag=self.camera.drag
         
     def opengl_init(self):
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glDepthFunc(GL_LEQUAL)
-        glEnable(GL_LINE_SMOOTH)
-        glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+        pyglet.gl.glDepthFunc(pyglet.gl.GL_LEQUAL)
+        pyglet.gl.glEnable(pyglet.gl.GL_LINE_SMOOTH)
+        pyglet.gl.glHint(pyglet.gl.GL_LINE_SMOOTH_HINT, pyglet.gl.GL_DONT_CARE)
 
     def render(self):
         while not self.window.has_exit:
             self.window.dispatch_events()
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT | pyglet.gl.GL_DEPTH_BUFFER_BIT)
             self.camera.apply()
             self.environment.draw()
             self.page.draw()
