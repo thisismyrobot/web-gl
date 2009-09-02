@@ -3,6 +3,7 @@ import pyglet.gl
 import pyglet.text
 import pyglet.window
 
+
 class Page:
     """ Represents a remotely loaded page
     """
@@ -32,7 +33,6 @@ class Page:
     def draw(self):
 
         #draw text background
-        pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(0.0, 0.0, -2000)
         pyglet.gl.glColor4f(0, 1.0, 0, 1)
         pyglet.gl.glLineWidth(1.5);
@@ -44,9 +44,25 @@ class Page:
         pyglet.gl.glEnd()
 
         #draw text
+        pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(0.0, 250, 1)
         self.layout.draw()
         pyglet.gl.glPopMatrix()
+        
+        #draw slider position
+        pyglet.gl.glTranslatef(1100, 1000, 0.0)
+
+        #deterimine the scroll position
+        scroll_pos = (float(self.layout.view_y) / float(self.layout.content_height - 1400)) * 1500
+        pyglet.gl.glTranslatef(0.0, scroll_pos, 0.0)
+        pyglet.gl.glColor4f(0, 1.0, 0, 1)
+        pyglet.gl.glLineWidth(1.5);
+        pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
+        pyglet.gl.glVertex3f(-25.0, -25.0, 0.0)
+        pyglet.gl.glVertex3f(-25.0, 25.0, 0.0)
+        pyglet.gl.glVertex3f(25.0, 25.0, 0.0)
+        pyglet.gl.glVertex3f(25.0, -25.0, 0.0)
+        pyglet.gl.glEnd()
 
     def scroll(self, s):
         self.layout.view_y += s
@@ -126,12 +142,12 @@ class Browser:
         self.render()
 
     def set_up_window(self):
-        self.window = pyglet.window.Window(fullscreen=False, resizable=True)
+        self.window = pyglet.window.Window(fullscreen=True, resizable=True)
         self.window.on_resize=self.camera.view
         self.window.on_mouse_drag=self.camera.drag
         self.window.on_mouse_scroll=self.scroll_page
-        self.window.width=1280
-        self.window.height=800
+        #self.window.width=1280
+        #self.window.height=800
         #self.window.push_handlers(pyglet.window.event.WindowEventLogger())
 
     def opengl_init(self):
