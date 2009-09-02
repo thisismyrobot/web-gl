@@ -4,7 +4,7 @@ import pyglet.text
 import pyglet.window
 
 
-class Page:
+class Page(object):
     """ Represents a remotely loaded page
     """
 
@@ -68,7 +68,7 @@ class Page:
         self.layout.view_y += s
 
 
-class Environment:
+class Environment(object):
 
     def draw(self):
         self.draw_base()
@@ -86,7 +86,7 @@ class Environment:
         pyglet.gl.glPopMatrix()
 
 
-class Camera():
+class Camera(object):
     rx,ry,rz=0,0,0
     w,h=640,480
     far=8192
@@ -124,7 +124,7 @@ class Camera():
         pyglet.gl.glRotatef(self.rz,0,0,1)
 
 
-class Browser:
+class Browser(object):
     """ Represents the application's main window - the browser.
     """
     
