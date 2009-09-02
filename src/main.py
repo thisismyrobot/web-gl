@@ -30,9 +30,9 @@ class Page(object):
         connection.close()
         self.layout.document.text = data
  
-    def draw(self):
-
-        #draw text background
+    def draw_background(self):
+        """ draw text background
+        """
         pyglet.gl.glTranslatef(0.0, 0.0, -2000)
         pyglet.gl.glColor4f(0, 1.0, 0, 1)
         pyglet.gl.glLineWidth(1.5);
@@ -43,13 +43,17 @@ class Page(object):
         pyglet.gl.glVertex3f(1100.0, -500.0, 0.0)
         pyglet.gl.glEnd()
 
-        #draw text
+    def draw_text(self):
+        """ draw text
+        """
         pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(0.0, 250, 1)
         self.layout.draw()
         pyglet.gl.glPopMatrix()
         
-        #draw slider position
+    def draw_slider(self):
+        """ draw slider position
+        """
         pyglet.gl.glTranslatef(1100, 1000, 0.0)
 
         #deterimine the scroll position
@@ -58,12 +62,17 @@ class Page(object):
         pyglet.gl.glColor4f(0, 1.0, 0, 1)
         pyglet.gl.glLineWidth(1.5);
         pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
-        pyglet.gl.glVertex3f(-25.0, -25.0, 0.0)
-        pyglet.gl.glVertex3f(-25.0, 25.0, 0.0)
-        pyglet.gl.glVertex3f(25.0, 25.0, 0.0)
-        pyglet.gl.glVertex3f(25.0, -25.0, 0.0)
+        pyglet.gl.glVertex3f(-10.0, -10.0, 0.0)
+        pyglet.gl.glVertex3f(-10.0, 10.0, 0.0)
+        pyglet.gl.glVertex3f(10.0, 10.0, 0.0)
+        pyglet.gl.glVertex3f(10.0, -10.0, 0.0)
         pyglet.gl.glEnd()
-
+    
+    def draw(self):
+        self.draw_background()
+        self.draw_text()
+        self.draw_slider()
+        
     def scroll(self, s):
         self.layout.view_y += s
 
