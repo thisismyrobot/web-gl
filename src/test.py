@@ -1,10 +1,9 @@
-from pyglet import window,image
 from pyglet.window import key
 from pyglet.gl import *
 
 import urllib2
 import pyglet.text
-
+import pyglet.window
 
 class Page:
     """ Represents a remotely loaded page
@@ -111,7 +110,7 @@ class Browser:
         self.render()
 
     def set_up_window(self):
-        self.window = window.Window(resizable=True, fullscreen=True)
+        self.window = pyglet.window.Window(resizable=True, fullscreen=True)
         self.window.on_resize=self.camera.view
         self.window.on_mouse_drag=self.camera.drag
         
