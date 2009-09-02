@@ -9,7 +9,7 @@ class Page:
 
     def __init__(self):
         self.document = pyglet.text.decode_text('No Page Loaded')
-        self.document.set_style(0, 50, {'font-size':12, 'color':(0, 255, 0, 255)})
+        self.document.set_style(0, 50, {'font-size':14, 'color':(0, 255, 0, 255)})
         self.layout = pyglet.text.layout.ScrollableTextLayout(
             self.document,
             2000, 
@@ -47,6 +47,10 @@ class Page:
         self.layout.draw()
         pyglet.gl.glPopMatrix()
 
+    def scroll(self, s):
+        self.layout.view_y += s
+
+
 
 class Environment:
 
@@ -81,7 +85,7 @@ class Camera():
         pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
 
     def drag(self, x, y, dx, dy, button, modifiers):
-        if button==4:
+        if button==1:
             self.ry+=dx/4.
             self.rx-=dy/4.
 
@@ -113,9 +117,11 @@ class Browser:
         self.window = pyglet.window.Window(fullscreen=False, resizable=True)
         self.window.on_resize=self.camera.view
         self.window.on_mouse_drag=self.camera.drag
-        self.window.width=1024
-        self.window.height=768
-        
+        self.window.on_mouse_scroll=self.scroll_page
+        self.window.width=1280
+        self.window.height=800
+        #self.window.push_handlers(pyglet.window.event.WindowEventLogger())
+
     def opengl_init(self):
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -138,7 +144,12 @@ class Browser:
 
     def draw_pages(self):
         self.page.draw()
+        
+    def scroll_page(self, x, y, dx, dy):
+        k = 100
+        self.page.scroll(dy*k)
 
 Browser()
+
 
 
