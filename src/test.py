@@ -35,6 +35,7 @@ class Page:
         pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(0.0, 0.0, -500)
         pyglet.gl.glColor4f(0, 1.0, 0, 1)
+        pyglet.gl.glLineWidth(1.5);
         pyglet.gl.glBegin(pyglet.gl.GL_LINE_STRIP)
         pyglet.gl.glVertex3f(-220.0, -170.0, 0.0)
         pyglet.gl.glVertex3f(-220.0, 170.0, 0.0)
@@ -55,12 +56,13 @@ class Environment:
 
     def draw_base(self):
         pyglet.gl.glPushMatrix()
+        pyglet.gl.glLineWidth(5);
         pyglet.gl.glColor4f(0.0, 0.0, 1.0, 0.1)
-        pyglet.gl.glBegin(pyglet.gl.GL_QUADS)
+        pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
+        pyglet.gl.glVertex3f(-550.0, -170.0, -550.0)
         pyglet.gl.glVertex3f(-550.0, -170.0, 550.0)
         pyglet.gl.glVertex3f(550.0, -170.0, 550.0)
         pyglet.gl.glVertex3f(550.0, -170.0, -550.0)
-        pyglet.gl.glVertex3f(-550.0, -170.0, -550.0)
         pyglet.gl.glEnd()
         pyglet.gl.glPopMatrix()
 
@@ -117,6 +119,8 @@ class Browser:
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glDepthFunc(GL_LEQUAL)
+        glEnable(GL_LINE_SMOOTH)
+        glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
 
     def render(self):
         while not self.window.has_exit:
