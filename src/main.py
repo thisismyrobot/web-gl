@@ -3,7 +3,7 @@ import pyglet.gl
 import pyglet.text
 import pyglet.window
 import math
-
+import random
 
 class Page(object):
     """ Represents a remotely loaded page
@@ -19,6 +19,11 @@ class Page(object):
     page_alpha_unfocussed = 0.25
 
     page_alpha = page_alpha_unfocussed
+    
+    page_x_offset = 0
+    page_y_offset = 0
+    page_z_offset = 0
+    page_z_rotation = 0    
     
     def __init__(self):
         self.document = pyglet.text.decode_text('No Page Loaded')
@@ -93,6 +98,8 @@ class Page(object):
 
     def draw(self):
         pyglet.gl.glPushMatrix()
+        pyglet.gl.glTranslatef(self.page_x_offset, self.page_y_offset, self.page_z_offset)
+        pyglet.gl.glRotatef(self.page_z_rotation, 0, 0, 1)
         self.draw_background()
         self.draw_text()
         self.draw_slider()
@@ -180,6 +187,11 @@ class Pages(object):
     def add_page(self, url):
         new_page = Page()
         new_page.load_url(url)
+        if len(self.pages) > 0:
+            new_page.page_z_offset = self.pages[len(self.pages)-1].page_z_offset - 100
+            new_page.page_z_rotation = (random.random()*30)-15
+            new_page.page_x_offset = (random.random()*2000)-1000
+            new_page.page_y_offset = (random.random()*100)-50
         self.pages.append(new_page)
 
     def draw(self):
@@ -189,7 +201,6 @@ class Pages(object):
         self.focussed_page.draw()
         
         for page in self.pages[1:]:
-            pyglet.gl.glTranslatef(0.0, 0.0, -100)
             page.set_focussed(False)
             page.draw()
         
@@ -217,6 +228,7 @@ class Desktop(object):
         self.environment = Environment()
         self.pages = Pages()
         self.pages.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
+        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
         self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
         self.opengl_init()
         self.render()
