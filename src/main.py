@@ -158,16 +158,19 @@ class Pages(object):
     """ Represents the loaded pages
     """
     pages = []
-    
+
     def add_page(self, url):
         new_page = Page()
         new_page.load_url(url)
         self.pages.append(new_page)
 
     def draw(self):
+        pyglet.gl.glPushMatrix()
         for page in self.pages:
             page.draw()
-            
+            pyglet.gl.glTranslatef(0.0, 0.0, -100)
+        pyglet.gl.glPopMatrix()
+
     @property
     def focussed_page(self):
         return self.pages[0]
@@ -184,22 +187,22 @@ class Desktop(object):
     def __init__(self):
         """ sets up the the window, starts rendering the browser
         """
-
         self.camera = Camera()
         self.set_up_window()
         self.camera.window = self.window
         self.environment = Environment()
         self.pages = Pages()
         self.pages.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
+        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
         self.opengl_init()
         self.render()
 
     def set_up_window(self):
-        self.window = pyglet.window.Window(fullscreen=True, resizable=True)
+        #self.window = pyglet.window.Window(fullscreen=True, resizable=True)
         
-        #self.window = pyglet.window.Window(fullscreen=False, resizable=True)
-        #self.window.width=1280
-        #self.window.height=800
+        self.window = pyglet.window.Window(fullscreen=False, resizable=True)
+        self.window.width=1280
+        self.window.height=800
         
         self.window.on_resize=self.camera.view
         #self.window.on_mouse_drag=self.camera.drag
