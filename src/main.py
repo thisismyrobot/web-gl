@@ -13,11 +13,16 @@ class Page(object):
     page_height = 2000 #visible text area height
     page_distance = 2000 #from user
     page_border = 50 #spacing around text
+    page_font_size = 14
+    
+    page_alpha_focussed = 1.0
+    page_alpha_unfocussed = 0.25
+
+    page_alpha = page_alpha_unfocussed
     
     def __init__(self):
-        style = {'font-size':14, 'color':(0, 255, 0, 255)}
         self.document = pyglet.text.decode_text('No Page Loaded')
-        self.document.set_style(0, 50, style)
+        self.update_document_style()
         self.layout = pyglet.text.layout.IncrementalTextLayout(
             self.document,
             self.page_width, 
@@ -26,7 +31,18 @@ class Page(object):
             multiline=True)
         self.layout.anchor_x='center' 
         self.layout.anchor_y='center'
+    
+    def set_focussed(self, focussed):
+        if focussed is True:
+            self.page_alpha = self.page_alpha_focussed
+        else:
+            self.page_alpha = self.page_alpha_unfocussed
+        self.update_document_style()
 
+    def update_document_style(self):
+        style = {'font-size':self.page_font_size, 'color':(0, 255, 0, int(self.page_alpha*255))}
+        self.document.set_style(0, 50, style)
+            
     def load_url(self, url):
         """Updates the self.text with the contents of a url
         """
@@ -40,7 +56,7 @@ class Page(object):
         """ draw text background
         """
         pyglet.gl.glTranslatef(0.0, 0.0, -self.page_distance)
-        pyglet.gl.glColor4f(0, 1.0, 0, 1)
+        pyglet.gl.glColor4f(0, 1.0, 0, self.page_alpha)
         pyglet.gl.glLineWidth(1.5);
         pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
         pyglet.gl.glVertex3f((-self.page_width/2)-self.page_border, (-self.page_height/2)-self.page_border, 0.0)
@@ -63,8 +79,8 @@ class Page(object):
         pyglet.gl.glTranslatef((self.page_width/2)+self.page_border, (self.page_height/2)+self.page_border, 0.0)
         scroll_pos = (float(self.layout.view_y) / float(self.layout.content_height - self.page_height)) * (self.page_height + self.page_border * 2)
         pyglet.gl.glTranslatef(0.0, scroll_pos, 0.0)
-        pyglet.gl.glColor4f(0, 1.0, 0, 1)
-        pyglet.gl.glLineWidth(1.5);
+        pyglet.gl.glLineWidth(1.5)
+        pyglet.gl.glColor4f(0, 1.0, 0, self.page_alpha)
         pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
         pyglet.gl.glVertex3f(-10.0, -10.0, 0.0)
         pyglet.gl.glVertex3f(-10.0, 10.0, 0.0)
@@ -72,13 +88,15 @@ class Page(object):
         pyglet.gl.glVertex3f(10.0, -10.0, 0.0)
         pyglet.gl.glEnd()
 
+    def scroll(self, s):
+        self.layout.view_y += s
+
     def draw(self):
+        pyglet.gl.glPushMatrix()
         self.draw_background()
         self.draw_text()
         self.draw_slider()
-
-    def scroll(self, s):
-        self.layout.view_y += s
+        pyglet.gl.glPopMatrix()
 
 
 class Environment(object):
@@ -166,11 +184,17 @@ class Pages(object):
 
     def draw(self):
         pyglet.gl.glPushMatrix()
-        for page in self.pages:
-            page.draw()
+        
+        self.focussed_page.set_focussed(True)
+        self.focussed_page.draw()
+        
+        for page in self.pages[1:]:
             pyglet.gl.glTranslatef(0.0, 0.0, -100)
+            page.set_focussed(False)
+            page.draw()
+        
         pyglet.gl.glPopMatrix()
-
+        
     @property
     def focussed_page(self):
         return self.pages[0]
