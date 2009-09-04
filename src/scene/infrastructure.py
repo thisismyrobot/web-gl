@@ -7,7 +7,7 @@ import scene.pages
 class Camera(object):
     rx,ry,rz=0,0,0
     w,h=640,480
-    far=8192
+    far=10000
     fov=60
     x,y,z=0,0,-2000
     speed=2000
@@ -22,8 +22,16 @@ class Camera(object):
         pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
 
     @classmethod
-    def update(self, x, y, dx, dy):
-        self.update_r(dx, dy)
+    def snap_focussed_page(self):
+        """ will position camera in front of focussed page
+        """
+        target_page = PageManager.get_focussed_page()
+        if target_page:
+            page_x = target_page.x
+            page_z = target_page.z
+        self.x = -page_x
+        self.z = -page_z - 2000
+        self.ry = 0
 
     @classmethod
     def update_r(self, dx, dy):
@@ -70,6 +78,19 @@ class Camera(object):
         pyglet.gl.glRotatef(self.ry,0,1,0)
         pyglet.gl.glRotatef(self.rz,0,0,1)
         pyglet.gl.glTranslatef(self.x, self.y, self.z)
+
+
+class Mouse(object):
+    """ Handles mouse events
+    """
+    @classmethod
+    def mouse_release(self, x, y, button, modifiers):
+        if button == 1:
+            Camera.snap_focussed_page()
+
+    @classmethod
+    def mouse_motion(self, x, y, dx, dy):
+        Camera.update_r(dx, dy)
 
 
 class Keys(object):
@@ -148,5 +169,5 @@ class PageManager(object):
 
     @classmethod
     def get_focussed_page(self):
-        focussed_page = [page for page in self.pages if page.focussed == True][0]
+        focussed_page = [page for page in self.pages if page.focussed is True][0]
         return focussed_page

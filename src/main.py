@@ -40,7 +40,8 @@ class Desktop(object):
 
         #handlers
         self.window.on_resize=scene.infrastructure.Camera.view
-        self.window.on_mouse_motion=scene.infrastructure.Camera.update
+        self.window.on_mouse_motion=scene.infrastructure.Mouse.mouse_motion
+        self.window.on_mouse_release=scene.infrastructure.Mouse.mouse_release
         self.window.on_mouse_scroll=self.scroll_page
         self.window.on_key_press=scene.infrastructure.Keys.down
         self.window.on_key_release=scene.infrastructure.Keys.up
