@@ -124,14 +124,18 @@ class PageManager(object):
             #get how far off your camera is
             error = abs(-Camera.ry - angle)
 
-            #store the error
-            errors.append(error)
+            #store the error as a page-index:error dict
+            errors.append((i,error))
 
             #unfocus all pages as a default
             page.focussed = False
 
-        #re-focus the page that had the least error
-        self.pages[errors.index(min(errors))].focussed = True
+        #sort the errors to put the page-index with the least error at the head
+        errors.sort(cmp=lambda x,y: cmp(x[1], y[1]))
+        
+        #re-focus the page that had the least error - if within the FOV
+        if errors[0][1] < 30:
+            self.pages[errors[0][0]].focussed = True
 
 
     @classmethod
