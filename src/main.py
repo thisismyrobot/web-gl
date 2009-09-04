@@ -20,10 +20,12 @@ class Desktop(object):
         self.set_up_window()
 
         scene.infrastructure.PageManager.add_page(
+            scene.pages.PythonConsole())
+        scene.infrastructure.PageManager.add_page(
             scene.pages.URL(url="http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt"))
         scene.infrastructure.PageManager.add_page(
             scene.pages.PythonConsole())
-
+ 
         self.opengl_init()
         self.render()
 

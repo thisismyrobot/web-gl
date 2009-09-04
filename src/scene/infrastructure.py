@@ -9,7 +9,7 @@ class Camera(object):
     w,h=640,480
     far=8192
     fov=60
-    x,y,z=0,0,0
+    x,y,z=0,0,-2000
     speed=2000
 
     @classmethod
@@ -36,6 +36,10 @@ class Camera(object):
         if new_rx > 30:
             new_rx = 30
 
+        new_ry = new_ry % 360
+        if new_ry > 180:
+            new_ry = new_ry - 360
+        
         self.rx=new_rx
         self.ry=new_ry
 
@@ -90,21 +94,45 @@ class PageManager(object):
     """ Represents the loaded pages
     """
     pages = []
-    focussed = 0
 
     @classmethod
-    def add_page(self, page):
+    def add_page(self, new_page):
         """ Adds a page to the front of the queue
         """
-        page.load()
-        self.pages.insert(0, page)
+        for page in self.pages:
+            page.z -= 2000
+            page.x -= 1000
+            page.x *= -2
+        new_page.load()
+        self.pages.insert(0, new_page)
 
-        if len(self.pages) > 0:
-            for i in range(len(self.pages)):
-                self.pages[i].z -= 1000
+    @classmethod
+    def hightlight_focussed(self):
+        """ sets "highlighted = True" on the closest page
+        """
+        distances = []
+        
+        for i in range(len(self.pages)):
+            page = self.pages[i]
+            
+            #get theoretical angle to page
+            x_offset = -Camera.x - page.x
+            z_offset = -Camera.z - page.z
+            angle = math.degrees(math.atan2(x_offset, z_offset))
+            
+            #get how far off you are
+            error = -Camera.ry - angle
+
+            #determine the selected one
+            if abs(error) < 10:
+                page.focussed = True
+            else:
+                page.focussed = False
+
 
     @classmethod
     def draw(self):
+        self.hightlight_focussed()
         pyglet.gl.glPushMatrix()
         for i in range(len(self.pages)):
             self.pages[i].draw()
@@ -112,4 +140,5 @@ class PageManager(object):
 
     @classmethod
     def get_focussed_page(self):
-        return self.pages[self.focussed]
+        focussed_page = [page for page in self.pages if page.focussed == True][0]
+        return focussed_page

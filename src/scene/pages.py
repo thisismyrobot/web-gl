@@ -8,13 +8,15 @@ class Page(object):
     """
     page_width = 1600 #visible text area width
     page_height = 2000 #visible text area height
-    page_distance = 2000 #from user
     page_border = 50 #spacing around text
     page_font_size = 14
     page_alpha = 1.0
 
     x,y,z,rz = 0,0,0,0
     r,g,b = 0.0,1.0,0.0
+    r_foc,g_foc,b_foc = 1.0,0.0,0.0
+
+    focussed = False
 
     def __init__(self, **kwargs):
         self.document = pyglet.text.decode_text('No Page Loaded')
@@ -44,8 +46,11 @@ class Page(object):
         """ draw text background
         """
         #border
-        pyglet.gl.glTranslatef(0.0, 0.0, -self.page_distance)
-        pyglet.gl.glColor4f(self.r, self.g, self.b, self.page_alpha)
+        if self.focussed is False:
+            pyglet.gl.glColor4f(self.r, self.g, self.b, self.page_alpha)
+        else:
+            pyglet.gl.glColor4f(self.r_foc, self.g_foc, self.b_foc, self.page_alpha)
+            
         pyglet.gl.glLineWidth(1.5);
         pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
         pyglet.gl.glVertex3f((-self.page_width/2)-self.page_border, (-self.page_height/2)-self.page_border, 0.0)
@@ -106,7 +111,7 @@ class URL(Page):
 
 
 class PythonConsole(Page):
-    """ Creates an interactive python console
+    """ Creates a page with an interactive python console
     """
     def load(self, **kwargs):
         """ Updates the self.text with the contents of a url
