@@ -4,6 +4,8 @@ import pyglet.text
 import pyglet.window
 import math
 import random
+import datetime
+import pyglet.clock
 
 
 class Keys(object):
@@ -16,7 +18,6 @@ class Keys(object):
         """ Adds a key to the array, signifying that it is being pressed.
         """
         self.keys.append(symbol)
-        print "up %s" % symbol
 
     @classmethod
     def up(self, symbol, modifiers):
@@ -153,8 +154,8 @@ class Camera(object):
     far=8192
     fov=60
     x,y,z=0,0,0
-    speed=10
-    
+    speed=1000
+
     def view(self,width,height):
         self.w,self.h=width,height
         pyglet.gl.glViewport(0, 0, width, height)
@@ -182,19 +183,20 @@ class Camera(object):
     def move(self):
         """ Iterates the key states, applying movement transforms as needed.
         """
+        distance = pyglet.clock.tick() * self.speed
         for key in Keys.keys:
             if key is 119: #W - forward
-                self.x -= math.sin(math.radians(self.ry)) * self.speed
-                self.z += math.cos(math.radians(self.ry)) * self.speed
+                self.x -= math.sin(math.radians(self.ry)) * distance
+                self.z += math.cos(math.radians(self.ry)) * distance
             if key is 115: #S - backward
-                self.x += math.sin(math.radians(self.ry)) * self.speed
-                self.z -= math.cos(math.radians(self.ry)) * self.speed
+                self.x += math.sin(math.radians(self.ry)) * distance
+                self.z -= math.cos(math.radians(self.ry)) * distance
             if key is 97: #A - strafe left
-                self.x += math.cos(math.radians(self.ry)) * self.speed
-                self.z += math.sin(math.radians(self.ry)) * self.speed
+                self.x += math.cos(math.radians(self.ry)) * distance
+                self.z += math.sin(math.radians(self.ry)) * distance
             if key is 100:
-                self.x -= math.cos(math.radians(self.ry)) * self.speed
-                self.z -= math.sin(math.radians(self.ry)) * self.speed
+                self.x -= math.cos(math.radians(self.ry)) * distance
+                self.z -= math.sin(math.radians(self.ry)) * distance
 
     def apply(self):
         self.move()
@@ -203,6 +205,7 @@ class Camera(object):
         pyglet.gl.glRotatef(self.ry,0,1,0)
         pyglet.gl.glRotatef(self.rz,0,0,1)
         pyglet.gl.glTranslatef(self.x, self.y, self.z)
+
 
 class Pages(object):
     """ Represents the loaded pages
@@ -247,6 +250,9 @@ class Desktop(object):
         self.pages.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
         self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
         self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
         self.opengl_init()
         self.render()
 
@@ -257,7 +263,7 @@ class Desktop(object):
         self.window = pyglet.window.Window(fullscreen=False, resizable=True)
         self.window.width=1280
         self.window.height=800
-        
+
         #handlers
         self.window.on_resize=self.camera.view
         self.window.on_mouse_motion=self.camera.drag
@@ -267,7 +273,6 @@ class Desktop(object):
         self.window.on_key_press=Keys.down
         self.window.on_key_release=Keys.up
 
-        #self.window.on_mouse_motion=self.handle_mouse_up
         #self.window.push_handlers(pyglet.window.event.WindowEventLogger())
 
     def opengl_init(self):
