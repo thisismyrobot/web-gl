@@ -15,3 +15,8 @@ class Floor(object):
         pyglet.gl.glVertex3f(2200.0, -500.0, -2200.0)
         pyglet.gl.glEnd()
         pyglet.gl.glPopMatrix()
+
+
+class ControlPanel(object):
+    """ Represents the hovering control area
+    """

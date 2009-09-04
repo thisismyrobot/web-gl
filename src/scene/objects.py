@@ -1,6 +1,7 @@
 import pyglet.gl
 import urllib2
 
+
 class Page(object):
     """ Represents a remotely loaded page
     """
@@ -9,11 +10,7 @@ class Page(object):
     page_distance = 2000 #from user
     page_border = 50 #spacing around text
     page_font_size = 14
-    
-    page_alpha_focussed = 1.0
-    page_alpha_unfocussed = 0.25
-
-    page_alpha = page_alpha_focussed
+    page_alpha = 1.0
 
     x,y,z,rz = 0,0,0,0
     r,g,b = 0.0,1.0,0.0
@@ -29,13 +26,6 @@ class Page(object):
             multiline=True)
         self.layout.anchor_x='center' 
         self.layout.anchor_y='center'
-
-    def set_focussed(self, focussed):
-        if focussed is True:
-            self.page_alpha = self.page_alpha_focussed
-        else:
-            self.page_alpha = self.page_alpha_unfocussed
-        self.update_document_style()
 
     def update_document_style(self):
         style = {'font-size':self.page_font_size, 'color':(int(self.r*255), int(self.g*255), int(self.b*255), int(self.page_alpha*255))}
@@ -68,7 +58,6 @@ class Page(object):
         """ draw text
         """
         pyglet.gl.glPushMatrix()
-        pyglet.gl.glTranslatef(0.0, 0.0, 1.0)
         self.layout.draw()
         pyglet.gl.glPopMatrix()
 
