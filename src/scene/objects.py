@@ -90,33 +90,3 @@ class Page(object):
         self.draw_text()
         self.draw_slider()
         pyglet.gl.glPopMatrix()
-
-
-class PageManager(object):
-    """ Represents the loaded pages -static
-    """
-    pages = []
-    focussed = 0
-
-    @classmethod
-    def add_page(self, url):
-        """ Adds a page to the front of the queue
-        """
-        new_page = Page()
-        new_page.load_url(url)
-        self.pages.insert(0, new_page)
-
-        if len(self.pages) > 0:
-            for i in range(len(self.pages)):
-                self.pages[i].z -= 1000
-
-    @classmethod
-    def draw(self):
-        pyglet.gl.glPushMatrix()
-        for i in range(len(self.pages)):
-            self.pages[i].draw()
-        pyglet.gl.glPopMatrix()
-
-    @property
-    def focussed_page(self):
-        return self.pages[self.focussed]

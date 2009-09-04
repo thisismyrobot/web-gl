@@ -19,12 +19,12 @@ class Desktop(object):
         scene.infrastructure.Camera()
         self.set_up_window()
 
-        scene.objects.PageManager.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
-        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.infrastructure.PageManager.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
+        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
 
         self.opengl_init()
         self.render()
@@ -36,6 +36,7 @@ class Desktop(object):
         self.window = pyglet.window.Window(fullscreen=False, resizable=True)
         self.window.width=1280
         self.window.height=800
+        self.window.set_exclusive_mouse(True)
 
         #handlers
         self.window.on_resize=scene.infrastructure.Camera.view
@@ -58,12 +59,12 @@ class Desktop(object):
             self.window.dispatch_events()
             pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT | pyglet.gl.GL_DEPTH_BUFFER_BIT)
             scene.infrastructure.Camera.apply()
-            scene.objects.PageManager.draw()
+            scene.infrastructure.PageManager.draw()
             self.window.flip()
 
     def scroll_page(self, x, y, dx, dy):
         k = 100
-        scene.objects.PageManager.focussed_page.scroll(dy*k)
+        scene.infrastructure.PageManager.focussed_page.scroll(dy*k)
 
 Desktop()
 
