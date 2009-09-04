@@ -1,4 +1,3 @@
-import urllib2
 import pyglet.gl
 import pyglet.text
 import pyglet.window
@@ -7,12 +6,14 @@ import random
 import datetime
 import pyglet.clock
 
+import scene.objects
+
 
 class Keys(object):
     """ Stores the state of keys
     """
     keys = []
-    
+
     @classmethod
     def down(self, symbol, modifiers):
         """ Adds a key to the array, signifying that it is being pressed.
@@ -26,129 +27,7 @@ class Keys(object):
         self.keys.remove(symbol)
 
 
-class Page(object):
-    """ Represents a remotely loaded page
-    """
-    page_width = 1600 #visible text area width
-    page_height = 2000 #visible text area height
-    page_distance = 2000 #from user
-    page_border = 50 #spacing around text
-    page_font_size = 14
-    
-    page_alpha_focussed = 1.0
-    page_alpha_unfocussed = 0.25
-
-    page_alpha = page_alpha_focussed
-    
-    x,y,z,rz = 0,0,0,0
-    
-    r,g,b = 0.0,1.0,0.0
-    
-    def __init__(self):
-        self.document = pyglet.text.decode_text('No Page Loaded')
-        self.update_document_style()
-        self.layout = pyglet.text.layout.IncrementalTextLayout(
-            self.document,
-            self.page_width, 
-            self.page_height,
-            dpi=200,
-            multiline=True)
-        self.layout.anchor_x='center' 
-        self.layout.anchor_y='center'
-    
-    def set_focussed(self, focussed):
-        if focussed is True:
-            self.page_alpha = self.page_alpha_focussed
-        else:
-            self.page_alpha = self.page_alpha_unfocussed
-        self.update_document_style()
-
-    def update_document_style(self):
-        style = {'font-size':self.page_font_size, 'color':(int(self.r*255), int(self.g*255), int(self.b*255), int(self.page_alpha*255))}
-        self.document.set_style(0, 50, style)
-
-    def load_url(self, url):
-        """Updates the self.text with the contents of a url
-        """
-        request = urllib2.Request(url)
-        connection = urllib2.urlopen(request)
-        data = connection.read()
-        connection.close()
-        self.layout.document.text = data
- 
-    def draw_background(self):
-        """ draw text background
-        """
-        pyglet.gl.glTranslatef(0.0, 0.0, -self.page_distance)
-        pyglet.gl.glColor4f(self.r, self.g, self.b, self.page_alpha)
-        pyglet.gl.glLineWidth(1.5);
-        pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
-        pyglet.gl.glVertex3f((-self.page_width/2)-self.page_border, (-self.page_height/2)-self.page_border, 0.0)
-        pyglet.gl.glVertex3f((-self.page_width/2)-self.page_border, (self.page_height/2)+self.page_border, 0.0)
-        pyglet.gl.glVertex3f((self.page_width/2)+self.page_border, (self.page_height/2)+self.page_border, 0.0)
-        pyglet.gl.glVertex3f((self.page_width/2)+self.page_border, (-self.page_height/2)-self.page_border, 0.0)
-        pyglet.gl.glEnd()
-
-    def draw_text(self):
-        """ draw text
-        """
-        pyglet.gl.glPushMatrix()
-        pyglet.gl.glTranslatef(0.0, 0.0, 1.0)
-        self.layout.draw()
-        pyglet.gl.glPopMatrix()
-
-    def draw_slider(self):
-        """ draw slider position
-        """
-        pyglet.gl.glTranslatef((self.page_width/2)+self.page_border, (self.page_height/2)+self.page_border, 0.0)
-        scroll_pos = (float(self.layout.view_y) / float(self.layout.content_height - self.page_height)) * (self.page_height + self.page_border * 2)
-        pyglet.gl.glTranslatef(0.0, scroll_pos, 0.0)
-        pyglet.gl.glLineWidth(1.5)
-        pyglet.gl.glColor4f(self.r, self.g, self.b, self.page_alpha)
-        pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
-        pyglet.gl.glVertex3f(-20.0, -20.0, 0.0)
-        pyglet.gl.glVertex3f(-20.0, 20.0, 0.0)
-        pyglet.gl.glVertex3f(20.0, 20.0, 0.0)
-        pyglet.gl.glVertex3f(20.0, -20.0, 0.0)
-        pyglet.gl.glEnd()
-
-    def scroll(self, s):
-        self.layout.view_y += s
-
-    def position_page(self):
-        pyglet.gl.glTranslatef(self.x, self.y, self.z)
-        pyglet.gl.glRotatef(self.rz, 0, 0, 1)
-
-    def draw(self):
-        pyglet.gl.glPushMatrix()
-        self.position_page()
-        self.draw_background()
-        self.draw_text()
-        self.draw_slider()
-        pyglet.gl.glPopMatrix()
-
-
-class Environment(object):
-
-    def draw(self):
-        #self.draw_base()
-        pass
-
-    def draw_base(self):
-        pyglet.gl.glPushMatrix()
-        pyglet.gl.glLineWidth(5);
-        pyglet.gl.glColor4f(0.0, 0.0, 1.0, 0.1)
-        pyglet.gl.glBegin(pyglet.gl.GL_LINE_LOOP)
-        pyglet.gl.glVertex3f(-2200.0, -500.0, -2200.0)
-        pyglet.gl.glVertex3f(-2200.0, -500.0, 2200.0)
-        pyglet.gl.glVertex3f(2200.0, -500.0, 2200.0)
-        pyglet.gl.glVertex3f(2200.0, -500.0, -2200.0)
-        pyglet.gl.glEnd()
-        pyglet.gl.glPopMatrix()
-
-
 class Camera(object):
-
     rx,ry,rz=0,0,0
     w,h=640,480
     far=8192
@@ -207,33 +86,6 @@ class Camera(object):
         pyglet.gl.glTranslatef(self.x, self.y, self.z)
 
 
-class Pages(object):
-    """ Represents the loaded pages
-    """
-    pages = []
-
-    def add_page(self, url):
-        """ Adds a page to the front of the queue
-        """
-        new_page = Page()
-        new_page.load_url(url)
-        self.pages.insert(0, new_page)
-
-        if len(self.pages) > 0:
-            for i in range(len(self.pages)):
-                self.pages[i].z -= 1000
-
-    def draw(self):
-        pyglet.gl.glPushMatrix()
-        for i in range(len(self.pages)):
-            self.pages[i].draw()
-        pyglet.gl.glPopMatrix()
-
-    @property
-    def focussed_page(self):
-        return self.pages[0]
-
-
 class ControlPanel(object):
     """ Represents the hovering control area
     """
@@ -248,20 +100,18 @@ class Desktop(object):
         self.camera = Camera()
         self.set_up_window()
         self.camera.window = self.window
-        self.environment = Environment()
-        self.pages = Pages()
-        self.pages.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
-        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        self.pages.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.objects.PageManager.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
+        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.objects.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
         self.opengl_init()
         self.render()
 
     def set_up_window(self):
         #self.window = pyglet.window.Window(fullscreen=True, resizable=True)
-        
+
         #set up window
         self.window = pyglet.window.Window(fullscreen=False, resizable=True)
         self.window.width=1280
@@ -286,32 +136,31 @@ class Desktop(object):
         pyglet.gl.glHint(pyglet.gl.GL_LINE_SMOOTH_HINT, pyglet.gl.GL_DONT_CARE)
 
     def render(self):
-        while not self.window.has_exit:
+        while 65307 not in Keys.keys: #escape
             self.window.dispatch_events()
             pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT | pyglet.gl.GL_DEPTH_BUFFER_BIT)
             self.camera.apply()
-            self.environment.draw()
-            self.pages.draw()
+            scene.objects.PageManager.draw()
             self.window.flip()
 
     def scroll_page(self, x, y, dx, dy):
         k = 100
-        self.pages.focussed_page.scroll(dy*k)
+        scene.objects.PageManager.focussed_page.scroll(dy*k)
 
     def handle_mouse_up(self, x, y, button, modifiers):
         if button == 1:
             x, y = self.map_to_page(x, y)
-            line = self.pages.focussed_page.layout.get_line_from_point(x, y)
-            char = self.pages.focussed_page.layout.get_position_on_line(line, x)
-            self.pages.focussed_page.layout.selection_background_color = (255, 0, 0, 255)
-            self.pages.focussed_page.layout.set_selection(char, char+1)
+            line = scene.objects.PageManager.focussed_page.layout.get_line_from_point(x, y)
+            char = scene.objects.PageManager.focussed_page.layout.get_position_on_line(line, x)
+            scene.objects.PageManager.focussed_page.layout.selection_background_color = (255, 0, 0, 255)
+            scene.objects.PageManager.focussed_page.layout.set_selection(char, char+1)
 
     def handle_mouse_down(self, x, y, button, modifiers):
         if button == 1:
             x, y = self.map_to_page(x, y)
             if x < 900 and x > -900 and y < 1050 and y > -1050:
-                self.pages.focussed_page.r=1
-                self.pages.focussed_page.g=0
+                scene.objects.PageManager.focussed_page.r=1
+                scene.objects.PageManager.focussed_page.g=0
 
     def map_to_page(self, x, y):
         """ Maps a screen click xy to a page xy
