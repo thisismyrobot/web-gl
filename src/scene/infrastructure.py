@@ -1,7 +1,8 @@
 import math
 import pyglet.gl
 import scene.infrastructure
-import scene.objects
+import scene.pages
+
 
 class Camera(object):
     rx,ry,rz=0,0,0
@@ -86,18 +87,17 @@ class Keys(object):
 
 
 class PageManager(object):
-    """ Represents the loaded pages -static
+    """ Represents the loaded pages
     """
     pages = []
     focussed = 0
 
     @classmethod
-    def add_page(self, url):
+    def add_page(self, page):
         """ Adds a page to the front of the queue
         """
-        new_page = scene.objects.Page()
-        new_page.load_url(url)
-        self.pages.insert(0, new_page)
+        page.load()
+        self.pages.insert(0, page)
 
         if len(self.pages) > 0:
             for i in range(len(self.pages)):
@@ -110,6 +110,6 @@ class PageManager(object):
             self.pages[i].draw()
         pyglet.gl.glPopMatrix()
 
-    @property
-    def focussed_page(self):
+    @classmethod
+    def get_focussed_page(self):
         return self.pages[self.focussed]

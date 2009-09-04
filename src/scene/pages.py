@@ -1,5 +1,6 @@
 import pyglet.gl
 import urllib2
+import subprocess
 
 
 class Page(object):
@@ -15,7 +16,7 @@ class Page(object):
     x,y,z,rz = 0,0,0,0
     r,g,b = 0.0,1.0,0.0
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.document = pyglet.text.decode_text('No Page Loaded')
         self.update_document_style()
         self.layout = pyglet.text.layout.IncrementalTextLayout(
@@ -26,19 +27,18 @@ class Page(object):
             multiline=True)
         self.layout.anchor_x='center' 
         self.layout.anchor_y='center'
+        self.kwargs = kwargs
+
 
     def update_document_style(self):
         style = {'font-size':self.page_font_size, 'color':(int(self.r*255), int(self.g*255), int(self.b*255), int(self.page_alpha*255))}
         self.document.set_style(0, 50, style)
 
-    def load_url(self, url):
-        """ Updates the self.text with the contents of a url
+    def load(self):
+        """ Marker for the code to load the page. Needs to do what ever is needed
+            for an initial page load, and set "self.layout.document.text" 
+            with the result.
         """
-        request = urllib2.Request(url)
-        connection = urllib2.urlopen(request)
-        data = connection.read()
-        connection.close()
-        self.layout.document.text = data
 
     def draw_background(self):
         """ draw text background
@@ -90,3 +90,28 @@ class Page(object):
         self.draw_text()
         self.draw_slider()
         pyglet.gl.glPopMatrix()
+
+
+class URL(Page):
+    """ Creates an page from a url
+    """
+    def load(self, **kwargs):
+        """ Updates the self.text with the contents of a url
+        """
+        request = urllib2.Request(self.kwargs['url'])
+        connection = urllib2.urlopen(request)
+        data = connection.read()
+        connection.close()
+        self.layout.document.text = data
+
+
+class PythonConsole(Page):
+    """ Creates an interactive python console
+    """
+    def load(self, **kwargs):
+        """ Updates the self.text with the contents of a url
+        """
+        process = subprocess.Popen(["python", "-i"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = process.communicate()[1]
+        result = result.replace("\r","")
+        self.layout.document.text = result

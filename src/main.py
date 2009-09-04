@@ -6,7 +6,7 @@ import random
 import datetime
 import pyglet.clock
 
-import scene.objects
+import scene.pages
 import scene.infrastructure
 
 
@@ -19,12 +19,10 @@ class Desktop(object):
         scene.infrastructure.Camera()
         self.set_up_window()
 
-        scene.infrastructure.PageManager.add_page("http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt")
-        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
-        scene.infrastructure.PageManager.add_page("http://wordpress.org/extend/plugins/about/readme.txt")
+        scene.infrastructure.PageManager.add_page(
+            scene.pages.URL(url="http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt"))
+        scene.infrastructure.PageManager.add_page(
+            scene.pages.PythonConsole())
 
         self.opengl_init()
         self.render()
@@ -64,7 +62,7 @@ class Desktop(object):
 
     def scroll_page(self, x, y, dx, dy):
         k = 100
-        scene.infrastructure.PageManager.focussed_page.scroll(dy*k)
+        scene.infrastructure.PageManager.get_focussed_page().scroll(dy*k)
 
 Desktop()
 
