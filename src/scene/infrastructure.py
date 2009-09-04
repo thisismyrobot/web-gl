@@ -111,23 +111,27 @@ class PageManager(object):
         """ sets "highlighted = True" on the closest page
         """
         distances = []
-        
+        errors = []
+
         for i in range(len(self.pages)):
             page = self.pages[i]
-            
-            #get theoretical angle to page
+
+            #get angle to page
             x_offset = -Camera.x - page.x
             z_offset = -Camera.z - page.z
             angle = math.degrees(math.atan2(x_offset, z_offset))
-            
-            #get how far off you are
-            error = -Camera.ry - angle
 
-            #determine the selected one
-            if abs(error) < 10:
-                page.focussed = True
-            else:
-                page.focussed = False
+            #get how far off your camera is
+            error = abs(-Camera.ry - angle)
+
+            #store the error
+            errors.append(error)
+
+            #unfocus all pages as a default
+            page.focussed = False
+
+        #re-focus the page that had the least error
+        self.pages[errors.index(min(errors))].focussed = True
 
 
     @classmethod
