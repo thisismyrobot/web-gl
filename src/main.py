@@ -154,7 +154,7 @@ class Camera(object):
     far=8192
     fov=60
     x,y,z=0,0,0
-    speed=1000
+    speed=2000
 
     def view(self,width,height):
         self.w,self.h=width,height
@@ -194,7 +194,7 @@ class Camera(object):
             if key is 97: #A - strafe left
                 self.x += math.cos(math.radians(self.ry)) * distance
                 self.z += math.sin(math.radians(self.ry)) * distance
-            if key is 100:
+            if key is 100: #D - strafe right
                 self.x -= math.cos(math.radians(self.ry)) * distance
                 self.z -= math.sin(math.radians(self.ry)) * distance
 
@@ -213,16 +213,19 @@ class Pages(object):
     pages = []
 
     def add_page(self, url):
-        if len(self.pages) > 0:
-            self.pages[0].set_focussed(False)
+        """ Adds a page to the front of the queue
+        """
         new_page = Page()
         new_page.load_url(url)
         self.pages.insert(0, new_page)
 
+        if len(self.pages) > 0:
+            for i in range(len(self.pages)):
+                self.pages[i].z -= 1000
+
     def draw(self):
         pyglet.gl.glPushMatrix()
         for i in range(len(self.pages)):
-            self.pages[i].z = i * -100
             self.pages[i].draw()
         pyglet.gl.glPopMatrix()
 
