@@ -30,12 +30,12 @@ class Desktop(object):
         self.render()
 
     def set_up_window(self):
-        #self.window = pyglet.window.Window(fullscreen=True, resizable=True)
+        self.window = pyglet.window.Window(fullscreen=True, resizable=True)
 
         #set up window
-        self.window = pyglet.window.Window(fullscreen=False, resizable=True)
-        self.window.width=1280
-        self.window.height=800
+        #self.window = pyglet.window.Window(fullscreen=False, resizable=True)
+        #self.window.width=1280
+        #self.window.height=800
         self.window.set_exclusive_mouse(True)
 
         #handlers
