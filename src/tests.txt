@@ -1,0 +1,52 @@
+Web-GL doc-tests - test page types
+==================================
+
+Test of basic URL-resource page
+-------------------------------
+
+Import the page manager
+
+>>> import scene.infrastructure
+
+The scene manager should not have any pages in it
+
+>>> scene.infrastructure.PageManager.pages
+[]
+
+Import the pages we can create
+
+>>> import scene.pages
+
+Create a URL-derived page and add it to the manager
+
+>>> new_page = scene.pages.URL(url="http://www.google.com")
+>>> scene.infrastructure.PageManager.add_page(new_page)
+
+The page should be in the PageManager now
+
+>>> scene.infrastructure.PageManager.pages
+[<scene.pages.URL object at 0...>]
+
+Even though it is the only item in the PageManager, it shouldn't be focussed
+
+>>> scene.infrastructure.PageManager.get_focussed_page()
+
+We can focus it now
+
+>>> scene.infrastructure.PageManager.pages[0].focussed = True
+
+And it should now be retrievable using get_focussed_page
+
+>>> focussed_page = scene.infrastructure.PageManager.get_focussed_page()
+>>> focussed_page
+<scene.pages.URL object at 0...>
+
+The url we saved before should now be set in the kwargs variable
+
+>>> focussed_page.kwargs['url']
+'http://www.google.com'
+
+And the page should have been already loaded
+
+>>> focussed_page.layout.document.text
+u'<!doctype html>...'
