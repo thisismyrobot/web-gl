@@ -30,12 +30,12 @@ class Desktop(object):
         self.render()
 
     def set_up_window(self):
-        self.window = pyglet.window.Window(fullscreen=True, resizable=True)
+        #self.window = pyglet.window.Window(fullscreen=True, resizable=True)
 
         #set up window
-        #self.window = pyglet.window.Window(fullscreen=False, resizable=True)
-        #self.window.width=1280
-        #self.window.height=800
+        self.window = pyglet.window.Window(fullscreen=False, resizable=True)
+        self.window.width=1280
+        self.window.height=800
         self.window.set_exclusive_mouse(True)
 
         #handlers
@@ -56,11 +56,12 @@ class Desktop(object):
         pyglet.gl.glHint(pyglet.gl.GL_LINE_SMOOTH_HINT, pyglet.gl.GL_DONT_CARE)
 
     def render(self):
-        while 65307 not in scene.infrastructure.Keys.keys: #escape
+        while 65307 not in scene.infrastructure.Keys.keys:
             self.window.dispatch_events()
             pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT | pyglet.gl.GL_DEPTH_BUFFER_BIT)
             scene.infrastructure.Camera.apply()
             scene.infrastructure.PageManager.draw()
+            scene.state.ApplicationState.handle_state_changes()
             self.window.flip()
 
     def scroll_page(self, x, y, dx, dy):

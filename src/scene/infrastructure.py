@@ -2,6 +2,7 @@ import math
 import pyglet.gl
 import scene.infrastructure
 import scene.pages
+import scene.state
 
 
 class Camera(object):
@@ -31,7 +32,7 @@ class Camera(object):
             page_z = target_page.z
         self.x = -page_x
         self.z = -page_z - 2000
-        self.ry = 0
+        self.ry, self.rx = 0, 0
 
     @classmethod
     def update_r(self, dx, dy):
@@ -54,21 +55,23 @@ class Camera(object):
     @classmethod
     def move(self):
         """ Iterates the key states, applying movement transforms as needed.
+            Only moves if in "fps" state.
         """
-        distance = pyglet.clock.tick() * self.speed
-        for key in scene.infrastructure.Keys.keys:
-            if key is 119: #W - forward
-                self.x -= math.sin(math.radians(self.ry)) * distance
-                self.z += math.cos(math.radians(self.ry)) * distance
-            if key is 115: #S - backward
-                self.x += math.sin(math.radians(self.ry)) * distance
-                self.z -= math.cos(math.radians(self.ry)) * distance
-            if key is 97: #A - strafe left
-                self.x += math.cos(math.radians(self.ry)) * distance
-                self.z += math.sin(math.radians(self.ry)) * distance
-            if key is 100: #D - strafe right
-                self.x -= math.cos(math.radians(self.ry)) * distance
-                self.z -= math.sin(math.radians(self.ry)) * distance
+        if scene.state.ApplicationState.get_state() == 'fps':
+            distance = pyglet.clock.tick() * self.speed
+            for key in scene.infrastructure.Keys.keys:
+                if key is 119: #W - forward
+                    self.x -= math.sin(math.radians(self.ry)) * distance
+                    self.z += math.cos(math.radians(self.ry)) * distance
+                if key is 115: #S - backward
+                    self.x += math.sin(math.radians(self.ry)) * distance
+                    self.z -= math.cos(math.radians(self.ry)) * distance
+                if key is 97: #A - strafe left
+                    self.x += math.cos(math.radians(self.ry)) * distance
+                    self.z += math.sin(math.radians(self.ry)) * distance
+                if key is 100: #D - strafe right
+                    self.x -= math.cos(math.radians(self.ry)) * distance
+                    self.z -= math.sin(math.radians(self.ry)) * distance
 
     @classmethod
     def apply(self):
@@ -103,6 +106,7 @@ class Keys(object):
         """ Adds a key to the array, signifying that it is being pressed.
         """
         self.keys.append(symbol)
+        print symbol
 
     @classmethod
     def up(self, symbol, modifiers):
@@ -169,5 +173,6 @@ class PageManager(object):
 
     @classmethod
     def get_focussed_page(self):
-        focussed_page = [page for page in self.pages if page.focussed is True][0]
-        return focussed_page
+        focussed_page = [page for page in self.pages if page.focussed is True]
+        if focussed_page:
+            return focussed_page[0]

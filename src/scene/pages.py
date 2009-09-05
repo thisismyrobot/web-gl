@@ -98,7 +98,7 @@ class Page(object):
 
 
 class URL(Page):
-    """ Creates an page from a url
+    """ Creates a page from a url
     """
     def load(self, **kwargs):
         """ Updates the self.text with the contents of a url
