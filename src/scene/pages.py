@@ -1,7 +1,8 @@
 import pyglet.gl
 import urllib2
 import subprocess
-
+import scene.state
+import pyglet.window
 
 class Page(object):
     """ Represents a remotely loaded page
@@ -35,12 +36,6 @@ class Page(object):
     def update_document_style(self):
         style = {'font-size':self.page_font_size, 'color':(int(self.r*255), int(self.g*255), int(self.b*255), int(self.page_alpha*255))}
         self.document.set_style(0, 50, style)
-
-    def load(self):
-        """ Marker for the code to load the page. Needs to do what ever is needed
-            for an initial page load, and set "self.layout.document.text" 
-            with the result.
-        """
 
     def draw_background(self):
         """ draw text background
@@ -92,9 +87,23 @@ class Page(object):
         pyglet.gl.glPushMatrix()
         self.position_page()
         self.draw_background()
+        if scene.state.ApplicationState.get_state() == 'edit' and self.focussed == True:
+            self.handle_input()
         self.draw_text()
         self.draw_slider()
         pyglet.gl.glPopMatrix()
+
+    #The following methods are marker methods to be overwritten by each type
+    def load(self):
+        """ Marker for the code to load the page. Needs to do what ever is needed
+            for an initial page load, and set "self.layout.document.text" 
+            with the result.
+        """
+
+    def handle_input(self):
+        """ Marker for the code to handle key presses sent to the page.
+        """
+        
 
 
 class URL(Page):
@@ -109,6 +118,10 @@ class URL(Page):
         connection.close()
         self.layout.document.text = data
 
+    def handle_input(self):
+        for key in scene.infrastructure.Keys.keys:
+            self.layout.document.text += pyglet.window.key.symbol_string(key)
+
 
 class PythonConsole(Page):
     """ Creates a page with an interactive python console
@@ -120,3 +133,7 @@ class PythonConsole(Page):
         result = process.communicate()[1]
         result = result.replace("\r","")
         self.layout.document.text = result
+
+    def handle_input(self):
+        for key in scene.infrastructure.Keys.keys:
+            self.layout.document.text += pyglet.window.key.symbol_string(key)

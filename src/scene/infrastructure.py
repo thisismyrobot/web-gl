@@ -157,7 +157,7 @@ class PageManager(object):
 
         #sort the errors to put the page-index with the least error at the head
         errors.sort(cmp=lambda x,y: cmp(x[1], y[1]))
-        
+
         #re-focus the page that had the least error - if within the FOV
         if errors[0][1] < 30:
             self.pages[errors[0][0]].focussed = True
