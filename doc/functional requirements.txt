@@ -1,0 +1,37 @@
+Functional Requirements
+=======================
+
+Introduction
+~~~~~~~~~~~~
+
+This is just a basic list of requirements for the application, to give it
+direction now that the sandbox testing phase has been sucessfull.
+
+Requirements by milestone
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Milestone 1
+-----------
+
+ * 3D "desktop" environment - "FPS"-style interface
+ * Cross-platform - as much as possible
+ * Python code-base
+ * Resources viewable as pages in "space"
+ * Ability to view/monitor specific resources
+    * URL-based resources (web pages)
+ * Text-based view of content - like a text-browser
+
+Milestone 2
+-----------
+
+ * Ability to view/monitor specific resources
+    * Computed resources (using xpath to filter remote/local xml/html)
+ * Ability to interact with specific resources
+    * Manual/automatic refresh of loaded remote/local resources
+
+Milestone 3
+-----------
+
+ * Ability to interact with specific resources
+    * Python interpreter - including introspection of application
+    * Command line/shell
