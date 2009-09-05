@@ -100,6 +100,7 @@ class Keys(object):
     """ Stores the state of keys
     """
     keys = []
+    buffer = []
 
     @classmethod
     def down(self, symbol, modifiers):
@@ -110,9 +111,30 @@ class Keys(object):
 
     @classmethod
     def up(self, symbol, modifiers):
-        """ Adds a key to the array, signifying that it is being pressed.
+        """ Removes a key from the array, signifying that it has been released.
         """
         self.keys.remove(symbol)
+        self.push_key(symbol)
+
+    @classmethod
+    def push_key(self, symbol):
+        """ Creates a queue of "up" keystrokes - used for piping input to a page.
+        """
+        self.buffer.append(symbol)
+
+    @classmethod
+    def pop_key(self):
+        """ Creates a queue of "up" keystrokes - used for piping input to a page.
+        """
+        if len(self.buffer) > 0:
+            return self.buffer.pop(0)
+
+    @classmethod
+    def clear_buffer(self):
+        """ Clears the buffer of residual keystrokes - usefull when transitioning
+            from movement to piping input to a page
+        """
+        self.buffer = []
 
 
 class PageManager(object):
@@ -133,7 +155,8 @@ class PageManager(object):
 
     @classmethod
     def hightlight_focussed(self):
-        """ sets "highlighted = True" on the closest page
+        """ sets "focussed = True" on the closest page - doesn't activate in
+            edit mode
         """
         distances = []
         errors = []
@@ -165,7 +188,8 @@ class PageManager(object):
 
     @classmethod
     def draw(self):
-        self.hightlight_focussed()
+        if scene.state.ApplicationState.get_state() != 'edit':
+            self.hightlight_focussed()
         pyglet.gl.glPushMatrix()
         for i in range(len(self.pages)):
             self.pages[i].draw()

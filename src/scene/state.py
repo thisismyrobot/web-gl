@@ -25,6 +25,7 @@ class ApplicationState(object):
             scene.infrastructure.PageManager.get_focussed_page() and
             self.get_state() != 'edit'):
             self.set_state('edit')
+            scene.infrastructure.Keys.clear_buffer()
 
         #CTRL key = exit edit mode 
         if (65507 in scene.infrastructure.Keys.keys and

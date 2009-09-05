@@ -5,7 +5,7 @@ import scene.state
 import pyglet.window
 
 class Page(object):
-    """ Represents a remotely loaded page
+    """ Represents a generic page
     """
     page_width = 1600 #visible text area width
     page_height = 2000 #visible text area height
@@ -103,7 +103,6 @@ class Page(object):
     def handle_input(self):
         """ Marker for the code to handle key presses sent to the page.
         """
-        
 
 
 class URL(Page):
@@ -119,8 +118,7 @@ class URL(Page):
         self.layout.document.text = data
 
     def handle_input(self):
-        for key in scene.infrastructure.Keys.keys:
-            self.layout.document.text += pyglet.window.key.symbol_string(key)
+        pass
 
 
 class PythonConsole(Page):
@@ -135,5 +133,34 @@ class PythonConsole(Page):
         self.layout.document.text = result
 
     def handle_input(self):
-        for key in scene.infrastructure.Keys.keys:
-            self.layout.document.text += pyglet.window.key.symbol_string(key)
+        pass
+
+
+class TextFile(Page):
+    """ Creates a page with a text file
+    """
+    def load(self, **kwargs):
+        """ Updates the self.text with the contents of a url
+        """
+        self.layout.document.text = ''
+
+    def handle_input(self):
+        while True:
+            symbol = scene.infrastructure.Keys.pop_key()
+            if symbol:
+                key=''
+                try:
+                    key = chr(symbol)
+                    self.layout.document.text += key
+                except:
+                    #handle special additive keys
+                    if symbol == 65293: #enter
+                        key = "\n"
+
+                    self.layout.document.text += key
+
+                    #handle subtractive keys
+                    if symbol == 65288: #backspace
+                        self.layout.document.text = self.layout.document.text[:-1]
+            else:
+                return
