@@ -3,6 +3,8 @@ import urllib2
 import subprocess
 import scene.state
 import pyglet.window
+import libxml2
+
 
 class Page(object):
     """ Represents a generic page
@@ -108,13 +110,35 @@ class Page(object):
 class URL(Page):
     """ Creates a page from a url
     """
-    def load(self, **kwargs):
+    def load(self):
         """ Updates the self.text with the contents of a url
         """
+        #load the resource (needs to be async eventually)
         request = urllib2.Request(self.kwargs['url'])
         connection = urllib2.urlopen(request)
         data = connection.read()
         connection.close()
+
+        #perform an xpath expression if needed
+        if 'xpath' in self.kwargs:
+            data_xml = libxml2.parseMemory(data, len(data))
+            data = ''
+            context = data_xml.xpathNewContext()
+            expression = '|'.join(self.kwargs['xpath']) # set up for union
+            results = context.xpathEval(expression)
+            for i in range(len(results)):
+                result = results[i]
+                #pad the results in if they are not the first path's result
+                if i % len(self.kwargs['xpath']) == 0:
+                    data += "* %s *\n" % str(result)
+                else:
+                    data += "%s\n" % result
+
+                #put whitespace between rows (after each item)
+                if (i+1) % len(self.kwargs['xpath']) == 0:
+                    data += "\n"
+
+        #update the text in the page
         self.layout.document.text = data
 
     def handle_input(self):
@@ -145,22 +169,4 @@ class TextFile(Page):
         self.layout.document.text = ''
 
     def handle_input(self):
-        while True:
-            symbol = scene.infrastructure.Keys.pop_key()
-            if symbol:
-                key=''
-                try:
-                    key = chr(symbol)
-                    self.layout.document.text += key
-                except:
-                    #handle special additive keys
-                    if symbol == 65293: #enter
-                        key = "\n"
-
-                    self.layout.document.text += key
-
-                    #handle subtractive keys
-                    if symbol == 65288: #backspace
-                        self.layout.document.text = self.layout.document.text[:-1]
-            else:
-                return
+        pass

@@ -18,25 +18,25 @@ class Desktop(object):
         scene.infrastructure.Camera()
         self.set_up_window()
 
+        #add some pages
         scene.infrastructure.PageManager.add_page(
-            scene.pages.URL(url="http://www.mightyseek.com/wp-content/plugins/podpress/readme.txt"))
-        scene.infrastructure.PageManager.add_page(
-            scene.pages.PythonConsole())
-        scene.infrastructure.PageManager.add_page(
-            scene.pages.TextFile())
+            scene.pages.URL(
+                url="http://www.abc.net.au/news/indexes/justin/rss.xml", 
+                xpath=('//item//title/text()', '//item/description/text()', '//item/pubDate/text()')
+                )
+            )
 
         self.opengl_init()
         self.render()
 
     def set_up_window(self):
-        #self.window = pyglet.window.Window(fullscreen=True, resizable=True)
+        self.window = pyglet.window.Window(fullscreen=True, resizable=True)
 
         #set up window
-        self.window = pyglet.window.Window(fullscreen=False, resizable=True)
-        self.window.width=1280
-        self.window.height=800
-        self.window.set_exclusive_mouse(True)
-
+        #self.window = pyglet.window.Window(fullscreen=False, resizable=True)
+        #self.window.width=1280
+        #self.window.height=800
+        
         #handlers
         self.window.on_resize=scene.infrastructure.Camera.view
         self.window.on_mouse_motion=scene.infrastructure.Mouse.mouse_motion
@@ -44,7 +44,8 @@ class Desktop(object):
         self.window.on_mouse_scroll=self.scroll_page
         self.window.on_key_press=scene.infrastructure.Keys.down
         self.window.on_key_release=scene.infrastructure.Keys.up
-
+    
+        self.window.set_exclusive_mouse(True)
         #self.window.push_handlers(pyglet.window.event.WindowEventLogger())
 
     def opengl_init(self):
@@ -60,7 +61,7 @@ class Desktop(object):
             pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT | pyglet.gl.GL_DEPTH_BUFFER_BIT)
             scene.infrastructure.Camera.apply()
             scene.infrastructure.PageManager.draw()
-            scene.state.ApplicationState.handle_state_changes()
+            #scene.state.ApplicationState.handle_state_changes()
             self.window.flip()
 
     def scroll_page(self, x, y, dx, dy):
