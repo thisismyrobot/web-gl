@@ -1,7 +1,6 @@
 """ Basic doc-tests for Web-GL
 """
 import doctest
-import os
 
 doctest.testfile("tests.txt", verbose=True, optionflags=doctest.ELLIPSIS)
 
