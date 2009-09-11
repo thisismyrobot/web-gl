@@ -3,6 +3,12 @@ Web-GL
 
 A sandbox for loading web-resources in a 3d environment.
 
+Dependencies
+------------
+
+* zope.interface - available on pypi
+* pyglet - available via google
+
 Referenced code
 ---------------
 
