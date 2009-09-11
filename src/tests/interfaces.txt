@@ -1,0 +1,34 @@
+Interfaces
+==========
+
+Testing the basic interface machinery
+
+Defining an interface
+---------------------
+
+>>> import zope.interface
+>>> class IFoo(zope.interface.Interface):
+...    """Foo blah blah"""
+...
+...    x = zope.interface.Attribute("""X blah blah""")
+...
+...    def bar():
+...        """bar blah blah"""
+
+>>> type(IFoo)
+<class 'zope.interface.interface.InterfaceClass'>
+
+Declaring the implementation of an interface
+--------------------------------------------
+
+>>> class Foo:
+...     zope.interface.implements(IFoo)
+...
+...     def __init__(self, x):
+...         self.x = x
+...
+...     def bar(self):
+...         return self.x
+
+>>> IFoo.implementedBy(Foo)
+True

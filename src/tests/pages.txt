@@ -17,6 +17,13 @@ Import the pages we can create
 
 >>> import scene.pages
 
+Check it conforms to the interface
+
+>>> import zope.interface
+>>> import scene.interfaces
+>>> scene.interfaces.IPage.implementedBy(scene.pages.URL)
+True
+
 Create a URL-derived page and add it to the manager
 
 >>> new_page = scene.pages.URL(url="http://www.google.com")

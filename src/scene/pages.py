@@ -1,14 +1,21 @@
 import pyglet.gl
+import urllib
 import urllib2
 import subprocess
 import scene.state
 import pyglet.window
 import libxml2
+import getpass
+import scene.interfaces
+import zope.interface
 
 
 class Page(object):
     """ Represents a generic page
     """
+
+    zope.interface.implements(scene.interfaces.IPage)
+
     page_width = 1600 #visible text area width
     page_height = 2000 #visible text area height
     page_border = 50 #spacing around text
@@ -108,7 +115,7 @@ class Page(object):
 
 
 class URL(Page):
-    """ Creates a page from a url
+    """ Creates a page from a url - with optional xpath filtering
     """
     def load(self):
         """ Updates the self.text with the contents of a url
@@ -143,6 +150,39 @@ class URL(Page):
 
     def handle_input(self):
         pass
+
+
+class GoogleReader(URL):
+    """ Creates a page from google reader - special as it handles the auth 
+        song and dance that google requires. Inherits the handle_input method
+        from URL as there is no difference.
+    """
+    def load(self):
+        """ Updates the self.text with the contents of a url
+        """
+        username = raw_input("Google Account Email Address: ")
+        password = getpass.getpass("Google Account Password: ")
+        reader_auth = urllib.urlencode(dict(Email=username, Passwd=password))
+        reader_sid = urllib2.urlopen('https://www.google.com/accounts/ClientLogin', reader_auth).read().split("\n")[0]
+        reader_request = urllib2.Request('http://www.google.com/reader/atom/user/10841948028353920346/state/com.google/reading-list')
+        reader_request.add_header('Cookie', reader_sid)
+        reader_connection = urllib2.urlopen(reader_request)
+        reader_data = reader_connection.read()
+        reader_connection.close()
+
+        reader_data_xml = libxml2.parseMemory(reader_data, len(reader_data))
+        reader_context = reader_data_xml.xpathNewContext()
+        reader_context.xpathRegisterNs("atom", "http://www.w3.org/2005/Atom")
+        reader_feed = reader_context.xpathEval(
+            "//atom:entry/atom:title/text()")
+
+        data = ''
+        for i in range(len(reader_feed)):
+            feed_item = reader_feed[i]
+            data += feed_item.__str__() + "\n\n"
+
+        #update the text in the page
+        self.layout.document.text = data
 
 
 class PythonConsole(Page):

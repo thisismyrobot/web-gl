@@ -3,7 +3,13 @@
 import doctest
 import os
 
-doctest.testfile("tests.txt", verbose=True, optionflags=doctest.ELLIPSIS)
+tests = (
+    "tests/pages.txt",
+    "tests/interfaces.txt"
+    )
 
-#hack to pause after running script - on windoze testfile causes a loss of focus for some reason...
-raw_input("Focus this console and press Enter to close")
+for test in tests:
+    doctest.testfile(test, optionflags=doctest.ELLIPSIS)
+
+#"pauses" after finish - in a cross-platform manner - pressing enter will close the open script.
+raw_input("If no output above, everything passed!")
